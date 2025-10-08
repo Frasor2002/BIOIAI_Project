@@ -1,0 +1,3 @@
+chess==1.11.2
+stockfish==3.28.0
+inspyred==1.0.3
