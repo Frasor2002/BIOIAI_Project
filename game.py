@@ -22,7 +22,7 @@ class Game:
       # White team
       if self.board.turn == chess.WHITE:
         # Update stockfish
-        engine.stockfish.set_fen_position(self.board.fen())
+        engine.syncWithGame(self)
 
         move = engine.chooseMove()
         print(f"White (Stockfish) plays {move}")
