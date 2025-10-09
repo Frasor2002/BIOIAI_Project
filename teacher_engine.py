@@ -2,8 +2,9 @@ import stockfish
 import chess
 
 class TeacherEngine:
-  def __init__(self, path):
+  def __init__(self, path, color: chess.Color):
     self.stockfish = stockfish.Stockfish(path)
+    self.color = color
 
   def configStockfish(self, depth, skill_level):
     self.stockfish.set_depth(depth)
