@@ -37,4 +37,5 @@ if __name__ == "__main__":
     print(f"Playing: Stockfish ({str_color(engine_color)}), Agent ({str_color(agent_color)})")
 
   game = Game()
-  game.play_match(teacherEngine, agent)
+  result = game.play_match(teacherEngine, agent)
+  print("game.play_match result:", result)

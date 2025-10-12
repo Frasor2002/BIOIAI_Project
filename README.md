@@ -7,7 +7,7 @@
 Project for the "Bio-Inspired Artificial Intelligence" course at University of Trento.
 
 ## Installation and Execution
-Follow the following steps to run the project code:
+Follow the steps to run the project code:
 
 1. Clone the repository:
    ```sh

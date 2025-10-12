@@ -23,6 +23,8 @@ class Agent:
     
     # TODO
     def getMove(self, legal_moves: list) -> chess.Move:
+        # Get the highest scoring move from the pieces
+        # Handle in case of same score with some logic
 
         move = random.choice(legal_moves)
         return move
