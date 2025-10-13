@@ -17,8 +17,6 @@ class Game:
     """Reset board state."""
     self.board = chess.Board()
 
-
-  # TODO: function to get legal moves for each piece
   def get_pieces_moves(self) -> Dict[chess.Square, dict]:
     """Get all legal moves indexed by chess square."""
     pieces_moves = {}
@@ -45,6 +43,7 @@ class Game:
 
     if current_turn == agent.color:
       move = agent.choose_move(list(self.board.legal_moves))
+      #move = agent.choose_move(self.get_pieces_moves())
       to_move = "Agent"
     else:
       move = teacher.choose_move(self.board.fen())

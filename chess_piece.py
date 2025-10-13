@@ -3,10 +3,15 @@ import random
 
 from typing import Optional
 
+import math
+
 class Piece(chess.Piece):
   """Parent chess piece class."""
   genotype: dict
   square: chess.Square
+  # TODO: add hunger and turns still vars
+  # TODO: add belief of enemy locations (receive locations from others)
+  # TODO: add scores to know important pieces (king is inf)
 
   def __init__(self, piece_type: chess.PieceType, color: chess.Color, square: chess.Square, genotype: Optional[dict]):
     """Initialize the class.
@@ -47,6 +52,57 @@ class Piece(chess.Piece):
   def get_genotype(self):
     """Getter for the genotype."""
     return self.genotype
+
+
+  # TODO: given a piece location we have to return its view on the board
+  def view_pieces(self, board: chess.Board):
+    view = {}
+    
+    # Get piece position
+    file = chess.square_file(self.square)
+    rank = chess.square_rank(self.square)
+    # Get view radius
+    radius = self.get_genotype()['radius']
+
+    # Iterate through all squares in radius
+    for delta_file in range(-radius, radius + 1):
+      for delta_rank in range(-radius, radius + 1):
+        new_file = file + delta_file
+        new_rank = rank + delta_rank
+
+        # Stay inside board boundaries (0–7)
+        if 0 <= new_file <= 7 and 0 <= new_rank <= 7:
+          new_square = chess.square(new_file, new_rank)
+          distance = math.trunc(math.sqrt(delta_file**2 + delta_rank**2))
+
+          # Skip the piece itself
+          if distance == 0:
+            continue
+
+          seen = board.piece_at(new_square)
+          if seen:
+            entry = {
+              "piece": seen.piece_type,
+              "color": seen.color,
+              "distance": distance
+            }
+          else:
+            entry = {
+              "piece": None,
+              "color": None,
+              "distance": distance
+            }
+
+          view[new_square] = entry
+
+
+    #self.view = view
+    # Can return only important pieces to broadcast to other agents
+    return view
+  
+  # TODO: given list of locations of friends/foes we need to understand safe and unsafe squares
+  def get_square_states(self, view, board):
+    pass
 
   # TODO
   def propose_move(self, board: chess.Board, legal_moves: list) -> tuple[chess.Move, int]:

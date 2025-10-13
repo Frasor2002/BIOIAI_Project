@@ -2,13 +2,13 @@ import chess
 import random
 from chess_piece import King, Queen, Rook, Bishop, Knight, Pawn
 
-from typing import Optional, Dict
+from typing import Optional
 
 class Agent:
   """Class of the multiagent system made up of various pieces."""
 
   color: chess.Color
-  pieces: Dict[chess.Square, Pawn | Rook | Knight | Bishop | Queen | King]
+  pieces: dict
 
   def __init__(self, color: chess.Color, genotype: Optional[dict]):
     """Initialize the class.
@@ -17,33 +17,59 @@ class Agent:
       genotype (Optional[dict]): genotype to be optimized.
     """
     self.color = color
-    #self.pieces = {
-    #  'king': King(color, genotype),
-    #  'queen': Queen(color, genotype),
-    #  'rook': ([Rook(color, genotype) for _ in range(0,2)]),
-    #  'bishop': ([Bishop(color, genotype) for _ in range(0,2)]),
-    #  'knight': ([Knight(color, genotype) for _ in range(0,2)]),
-    #  'pawn': ([Pawn(color, genotype) for _ in range(0,8)])
-    #}
-    self.pieces = {}
+
+    self.pieces = {
+      'pawn': [],
+      'rook': [],
+      'knight': [],
+      'bishop': [],
+      'queen': [],
+      'king': []
+    }
+    self.init_pieces(genotype)
   
-  # TODO: create mapping between board and our internal state
   def init_pieces(self, genotype: Optional[dict]):
-    pass
-  
+    """Create and init pieces with their starting positions.
+    Args:
+      genotype (Optional[dict]): optional genotype to init pieces.
+    """
+    # Starting rank and piece positions for each color
+    if self.color == chess.WHITE:
+      back_rank = 0 # row 1
+      pawn_rank = 1 # row 2
+    else:
+      back_rank = 7 # row 8
+      pawn_rank = 6 # row 7
+    
+    # Init pawns
+    for file in range(8): # files from A to H
+      square = chess.square(file, pawn_rank)
+      self.pieces["pawn"].append(Pawn(self.color, square, genotype))
+
+    # Order of back rank pieces with key and class to init
+    back_layout = [
+      ("rook",   Rook),
+      ("knight", Knight),
+      ("bishop", Bishop),
+      ("queen",  Queen),
+      ("king",   King),
+      ("bishop", Bishop),
+      ("knight", Knight),
+      ("rook",   Rook)
+    ]
+
+    # Init back pieces
+    for file, (key, piece_class) in enumerate(back_layout):
+      square = chess.square(file, back_rank)
+      self.pieces[key].append(piece_class(self.color, square, genotype))
+        
 
   # TODO: after we move we need to update our internal state
-  def update_pieces(self, move: chess.Move):
+  def update_pieces(self, move: chess.Move, board: chess.Board):
     pass
     
 
-  # TODO: given a piece location we have to return its view on the board
-  def get_piece_view(self, board):
-    pass
   
-  # TODO: given list of locations of friends/foes we need to understand safe and unsafe squares
-  def get_square_states(self, view, board):
-    pass
   
   # TODO
   def choose_move(self, legal_moves: list) -> chess.Move:
@@ -54,6 +80,10 @@ class Agent:
       chess.Move: chosen move.
     """
   
+  # Pieces must look around the board in their sight radius
+
+  # Pieces send communications on important enemy pieces
+
   # Get the highest scoring move from the pieces
   # Handle in case of same score with some logic
     move = random.choice(legal_moves)
