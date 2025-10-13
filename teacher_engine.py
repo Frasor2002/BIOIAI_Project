@@ -1,13 +1,8 @@
-from __future__ import annotations
-
 import chess
 import random
 from stockfish import Stockfish
 
-from typing import TYPE_CHECKING, Optional
-
-if TYPE_CHECKING:
-  from game import Game
+from typing import Optional
 
 class TeacherEngine:
   """TeacherEngine class wrapper around stockfish library."""
@@ -19,12 +14,12 @@ class TeacherEngine:
     """Initialize by loading stockfish and setting which color to play as.
     Args:
       path (str): filepath of stockfish binary.
-      color (chess.Color): which color to play as.
+      color (chess.Color): which color stockfish will to play as.
     """
     self.stockfish = Stockfish(path)
     self.color = color
 
-  def configStockfish(self, depth: Optional[int], skill_level: Optional[int]):
+  def config_stockfish(self, depth: Optional[int], skill_level: Optional[int]):
     """Configure stockfish parameters.
     Args:
       depth (Optional[int]): optional parameter to set depth of stockfish search.
@@ -35,28 +30,30 @@ class TeacherEngine:
     if skill_level is not None:
       self.stockfish.set_skill_level(skill_level)
   
-  def getConfigStockfish(self):
-    """Getter for Stockfish configuration parameters."""
+  def get_config_stockfish(self) -> dict:
+    """Getter for Stockfish configuration parameters.
+    Returns:
+      dict: dictionary containing Stockfish config parameters.
+    """
     return self.stockfish.get_parameters()
 
-  def syncWithGame(self, game: Game):
+  def sync_with_game(self, board_state: str):
     """Given a game, synch internal stockfish state with the game state.
     Args:
-      game (Game): game object containing the state of the match.
+      board_state (str): state of the match in fen format.
     """
-    state = game.board.fen()
-    self.stockfish.set_fen_position(state)
+    self.stockfish.set_fen_position(board_state)
 
 
-  def chooseMove(self, game: Game):
+  def choose_move(self, board_state: str) -> chess.Move:
     """Given a game a move is returned.
     Args:
-      game (Game): game object containing the state of the match.
+      board_state (str): state of the match in fen format.
     Returns:
       (chess.Move): move suggested by stockfish.
     """
     # Update internal state
-    self.syncWithGame(game)
+    self.sync_with_game(board_state)
 
     # Choose the best move
     #move = self.stockfish.get_best_move()

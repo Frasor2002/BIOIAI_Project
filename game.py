@@ -1,8 +1,8 @@
 import chess
-
 from teacher_engine import TeacherEngine
 from agent import Agent
 from utils import str_color
+from typing import Optional, Dict
 
 class Game:
   """Game class to handle the various matches."""
@@ -13,12 +13,48 @@ class Game:
     """Initialize game object."""
     self.board = chess.Board()
 
-  def resetBoard(self):
+  def reset_board(self):
     """Reset board state."""
     self.board = chess.Board()
 
 
-  def play_match(self, teacher: TeacherEngine, agent: Agent):
+  # TODO: function to get legal moves for each piece
+  def get_pieces_moves(self) -> Dict[chess.Square, dict]:
+    """Get all legal moves indexed by chess square."""
+    pieces_moves = {}
+
+    for move in self.board.legal_moves:
+      if move.from_square not in pieces_moves:
+        pieces_moves[move.from_square] = {
+          'piece_type': self.board.piece_at(move.from_square),
+          'moves': []
+        }
+      pieces_moves[move.from_square]['moves'].append(move)
+
+    return pieces_moves
+
+  def get_move(self, teacher: TeacherEngine, agent: Agent) -> chess.Move:
+    """Get next move based on whose turn it is.
+    Args:
+      teacher (TeacherEngine): object to handle stockfish chess engine.
+      agent (Agent): multiagent system to be optimized.
+    Returns:
+      chess.Move: move to do next.
+    """
+    current_turn = self.board.turn
+
+    if current_turn == agent.color:
+      move = agent.choose_move(list(self.board.legal_moves))
+      to_move = "Agent"
+    else:
+      move = teacher.choose_move(self.board.fen())
+      to_move = "Stockfish"
+    
+    #print(f"{to_move} ({str_color(current_turn)}) plays {move}")
+    return move
+
+
+  def play_match(self, teacher: TeacherEngine, agent: Agent) -> Optional[str]:
     """Play a single match of chess putting the teacher engine and the
     agent in competition.
     Args:
@@ -28,41 +64,19 @@ class Game:
       Optional[str]: if there is a winner return a string with the name.
     """
     # Reset game state
-    self.resetBoard()
+    self.reset_board()
 
     # Show game at the start
-    print(self.board)
+    #print(self.board)
 
     # Play until stalemate or checkmate is achieved
     while (not self.board.is_checkmate()) and (not self.board.is_stalemate()):
-
-      # White team
-      if self.board.turn == chess.WHITE:
-        # Agent turn
-        if agent.color == chess.WHITE:
-          move = agent.getMove(list(self.board.legal_moves))
-          print(f"Agent (white) plays {move}")
-        # Engine turn
-        else:
-          move = teacher.chooseMove(self)
-          print(f"Stockfish (white) plays {move}")
-
-      # Black team
-      if self.board.turn == chess.BLACK:
-        # Agent turn
-        if agent.color == chess.BLACK:
-          move = agent.getMove(list(self.board.legal_moves))
-          print(f"Agent (black) plays {move}")
-        # Engine turn
-        else:
-          move = teacher.chooseMove(self)
-          print(f"Stockfish (black) plays {move}")
-
+      move = self.get_move(teacher, agent)
       # Update board
       self.board.push(move)
 
     # Show game
-    print(self.board)
+    #print(self.board)
 
     if self.board.is_checkmate():
       winner = f"Stockfish ({str_color(teacher.color)})" if self.board.turn == agent.color else f"Agent ({str_color(agent.color)})" 

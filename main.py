@@ -11,6 +11,7 @@ from utils import str_color
 
 if __name__ == "__main__":
 
+  # Get command line args
   parser = argparse.ArgumentParser()
   parser.add_argument('-c', '--agent_color', type=str, choices=['white', 'black', 'random'], default="white", help="Agent piece color")
   args = parser.parse_args()
@@ -28,7 +29,7 @@ if __name__ == "__main__":
   engine_color = chess.WHITE if agent_color == chess.BLACK else chess.BLACK
 
   teacherEngine = TeacherEngine(config["stockfish_path"], engine_color)
-  teacherEngine.configStockfish(8, 20)
+  teacherEngine.config_stockfish(8, 20)
   agent = Agent(agent_color, None)
 
   if agent_color == chess.WHITE:
