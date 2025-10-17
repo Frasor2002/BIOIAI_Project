@@ -42,7 +42,7 @@ class Game:
     current_turn = self.board.turn
 
     if current_turn == agent.color:
-      move = agent.choose_move(list(self.board.legal_moves))
+      move = agent.choose_move(list(self.board.legal_moves), self.board)
       #move = agent.choose_move(self.get_pieces_moves())
       to_move = "Agent"
     else:

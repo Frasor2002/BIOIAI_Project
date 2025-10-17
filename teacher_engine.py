@@ -55,12 +55,16 @@ class TeacherEngine:
     # Update internal state
     self.sync_with_game(board_state)
 
-    # Choose the best move
-    #move = self.stockfish.get_best_move()
-
-    # Or we can choose one of the top k ones
+    # Choose one of the top k ones
     top_moves = self.stockfish.get_top_moves(3)
-    move = random.choice([top_moves[1]["Move"], top_moves[2]["Move"]])
+    if len(top_moves) == 3:
+      move = random.choice([top_moves[1]["Move"], top_moves[2]["Move"]])
+    elif len(top_moves) == 2:
+      print("Only 2 top moves")
+      move = top_moves[1]["Move"]
+    else:
+      print("Only one top move")
+      move = top_moves[0]["Move"]
     
     # Convert move into usable format
     move = chess.Move.from_uci(move)
